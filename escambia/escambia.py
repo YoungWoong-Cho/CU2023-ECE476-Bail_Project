@@ -4,16 +4,16 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import mysql.connector
 import utils as utils
-from pdb import set_trace as bp
+import argparse
 
 class escambia(object):
-    def __init__(self):
+    def __init__(self, args):
         # Prepare mysql connection
         self.mydb = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="whspr",
-            database="escambia3"
+            host=args.host,
+            user=args.user,
+            password=args.password,
+            database=args.database
         )
         self.mycursor = self.mydb.cursor()
         self.mycursor.execute("""
@@ -359,7 +359,14 @@ Select an option:
                 return
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Escambia web scraping tool')
+    parser.add_argument('--host', type=str, help='hostname for the database server', required=True)
+    parser.add_argument('--user', type=str, help='username for the database', required=True)
+    parser.add_argument('--password', type=str, help='password for the database', required=True)
+    parser.add_argument('--database', type=str, help='name of the database', required=True)
+    args = parser.parse_args()
+
     print('[INFO] Starting a scraping tool...')
-    esc = escambia()
+    esc = escambia(args)
     esc.print_help()
     esc.run()
