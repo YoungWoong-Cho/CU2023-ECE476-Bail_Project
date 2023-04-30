@@ -154,11 +154,11 @@ Select an option:
 >> """)
             if user_input == "1":
                 # code for option 1
-                try:
+                # try:
                     self.find_next_inmate()
                     print('[INFO] Inmate found. Solve the puzzle and move on to the defendant info page for the defendant_scrape.')
-                except:
-                    print('[WARN] Cannot run find_next_inmate. Are you at the correct webpage?')
+                # except:
+                #     print('[WARN] Cannot run find_next_inmate. Are you at the correct webpage?')
             elif user_input == "2":
                 try:
                     self.defendant_scrape()
@@ -186,12 +186,18 @@ Select an option:
 
     def find_next_inmate(self):
         # for page_idx in range(100):
-        while True:
+        while self.page_idx < 100:
             table = self.driver.find_element('xpath', '//*[@id="gridSearchResults"]/tbody')
             row_num = len(table.find_elements('xpath', './tr'))
-            while self.row_idx < row_num:
+            while self.row_idx < row_num - 1:
                 self.row_idx += 1
-                print(f"Searching: PAGE {self.page_idx + 1} ROW {self.row_idx}\r", end="")
+                
+                # To attach the element again
+                table = self.driver.find_element('xpath', '//*[@id="gridSearchResults"]/tbody')
+
+                page_str = '{:03d}'.format(self.page_idx + 1) 
+                row_str = '{:02d}'.format(self.row_idx)
+                print(f"Searching: PAGE {page_str} ROW {row_str}\r", end="")
                 row = table.find_elements('xpath', './tr')[self.row_idx]
 
                 # If defendant, not plaintiff
@@ -217,6 +223,17 @@ Select an option:
                         print(f"[INFO] Inmate found: {name} @ PAGE {self.page_idx + 1} ROW {self.row_idx + 1}")
                         self.name_search(name)
                         return
+                    # Go back to the list
+                    else:
+                        self.driver.back()
+                        self.driver.implicitly_wait(3)
+            
+            # Go to the next page
+            self.page_idx += 1
+            self.row_idx = 0
+            self.driver.find_element('xpath', '//*[@id="gridpager"]/table/tbody/tr/td[6]/a').click()
+            self.driver.implicitly_wait(3)
+        print("[INFO] Scraping done.")
 
 
     def name_search(self, name):
