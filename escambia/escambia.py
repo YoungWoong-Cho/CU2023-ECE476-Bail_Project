@@ -89,7 +89,7 @@ class escambia(object):
         CREATE TABLE IF NOT EXISTS receipt
         (id BIGINT PRIMARY KEY AUTO_INCREMENT,
         date VARCHAR(255),
-        recipt_num VARCHAR(255),
+        receipt_num VARCHAR(255),
         applied_amount VARCHAR(255),
         summary_id BIGINT,
         FOREIGN KEY (summary_id) REFERENCES summary(id))
