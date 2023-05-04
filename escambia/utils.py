@@ -1,5 +1,6 @@
-from typing import Union, List, Dict
+from typing import Union, Dict
 import selenium
+import pandas as pd
 from pdb import set_trace as bp
 
 def parse_text(_type: str, element:Union[str, selenium.webdriver.remote.webelement.WebElement]):
@@ -53,7 +54,7 @@ def parse_text(_type: str, element:Union[str, selenium.webdriver.remote.webeleme
     elif _type == 'receipts':
         summary = {
             'date': element.find_elements('xpath', './td')[0].text.replace("'", "\\'"),
-            'recipt_num': element.find_elements('xpath', './td')[1].text.replace("'", "\\'"),
+            'receipt_num': element.find_elements('xpath', './td')[1].text.replace("'", "\\'"),
             'applied_amount': element.find_elements('xpath', './td')[2].text.replace("'", "\\'"),
         }
     elif _type == 'case_dockets':
@@ -79,3 +80,7 @@ def create_query(data:Dict, table_name:str):
     query += f" {column_names} VALUES {values}"
 
     return query
+
+def add_row(data:Dict, dataFrame:pd.DataFrame):
+    dataFrame = dataFrame.append(data, ignore_index=True)
+    return dataFrame
