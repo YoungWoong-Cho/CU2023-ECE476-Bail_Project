@@ -62,7 +62,7 @@ Select an option:
 (2) Scrape inmate info
 (3) Scrape summary
 (4) Scrape bond
-(5) Save to csv
+(5) Save to an excel file
 (q) Quit
 =====================================
 >> """)
@@ -93,10 +93,10 @@ Select an option:
                     print('[WARN] Cannot run bond_scrape. Are you at the correct webpage?')
             elif user_input == "5":
                 try:
-                    self.save_csv()
-                    print('[INFO] Save to csv file done.')
+                    self.save_excel()
+                    print('[INFO] Save to an excel file done.')
                 except:
-                    print('[WARN] Cannot save to csv file.')
+                    print('[WARN] Cannot save to an excel file.')
             elif user_input.lower() == "q":
                 print("Exiting program...")
                 break
@@ -151,7 +151,11 @@ Select an option:
             # Go to the next page
             self.page_idx += 1
             self.row_idx = 0
-            self.driver.find_element('xpath', '//*[@id="gridpager"]/table/tbody/tr/td[6]/a').click()
+            try:
+                self.driver.find_element('xpath', '//*[@id="gridpager"]/table/tbody/tr/td[6]/a').click()
+            except:
+                from pdb import set_trace as bp
+                bp()
             self.driver.implicitly_wait(3)
         print("[INFO] Scraping done.")
 
@@ -238,7 +242,7 @@ Select an option:
             case_docket['summary_id'] = summary_id
             self.case_docket_df = utils.add_row(case_docket, self.case_docket_df)
     
-    def save_csv(self):
+    def save_excel(self):
         with pd.ExcelWriter('scrape_result.xlsx') as writer:
             self.defendant_df.to_excel(writer, sheet_name='Defendant', index=False)
             self.bond_df.to_excel(writer, sheet_name='Bond', index=False)
